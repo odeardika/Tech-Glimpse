@@ -1,6 +1,5 @@
 import * as cheerio from 'cheerio';
 import axios from 'axios';
-import { get } from 'http';
 
 function getFavicon(url: string, favicon: string){
     const urlParts = url.split('/');
@@ -27,11 +26,14 @@ async function getNewsMetadata(url: string) {
         };
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Error fetching metadata:', error.message);
-
+            // console.error('Error fetching metadata:', error.message);
         }
-        else {
-            console.error('Unexpected error:', error);
+        else if (error instanceof TypeError && error.message === 'Invalid URL') {
+            // console.error('Invalid URL:', url);
+        } else if (error instanceof Error && (error as any).code === 'ECONNRESET') {
+            // console.error('Connection was reset while fetching metadata:', url);
+        } else {
+            // console.error('Unexpected error:', error);
         }
         return {status: 500, message: 'Error fetching metadata'};
     }
