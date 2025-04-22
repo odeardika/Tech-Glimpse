@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import axios from 'axios';
+import News from '@/types/News';
 
 function getFavicon(url: string, favicon: string){
     const urlParts = url.split('/');
@@ -30,7 +31,7 @@ async function getNewsMetadata(url: string) {
         }
         else if (error instanceof TypeError && error.message === 'Invalid URL') {
             // console.error('Invalid URL:', url);
-        } else if (error instanceof Error && (error as any).code === 'ECONNRESET') {
+        } else if (error instanceof Error && 'code' in error && (error as { code: string }).code === 'ECONNRESET') {
             // console.error('Connection was reset while fetching metadata:', url);
         } else {
             // console.error('Unexpected error:', error);
@@ -48,7 +49,7 @@ async function getListNews(url: string) {
 
 export async function getNews() {
     const listNewsId = await getListNews("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
-    const data = await Promise.all(listNewsId.data.slice(0, 30).map(async (id: number) => {
+    const data: News[] = await Promise.all(listNewsId.data.slice(0, 30).map(async (id: number) => {
         const news = await axios.get(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`);
         const metadata = await getNewsMetadata(news.data.url);
         if (metadata.status === 500) {
