@@ -42,7 +42,15 @@ async function getNewsMetadata(url: string) {
 }
 
 async function getListNews(url: string) {
-    const data = await axios.get(url);
+    const data = await axios.get(url, {
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        },
+        params: {
+            _t: Date.now() // Add a timestamp to bypass cache
+        }
+    });
 
     return data;
 }
