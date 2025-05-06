@@ -41,7 +41,7 @@ async function getNewsMetadata(url: string) {
         
 }
 
-async function getListNews(url: string) {
+export async function getListNews(url: string) {
     const data = await fetch(url, {
         next : {
             revalidate : 60,
@@ -53,7 +53,7 @@ async function getListNews(url: string) {
 
 export async function getNews() {
     const listNewsId = await getListNews("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
-    const data: News[] = await Promise.all(listNewsId.data.slice(0, 30).map(async (id: number) => {
+    const data: News[] = await Promise.all(listNewsId.slice(0, 30).map(async (id: number) => {
         const news = await axios.get(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`);
         const metadata = await getNewsMetadata(news.data.url);
         if (metadata.status === 500) {
