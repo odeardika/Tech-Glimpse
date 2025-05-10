@@ -1,10 +1,11 @@
 import NewsCard from "@/components/NewsCard/NewsCard";
 import PopupMenu from "@/components/PopupMenu/PopupMenu";
+import SegmentedControl from "@/components/SegmentedControl/SegmentedControl";
 import { getTodayNews } from "./get-news";
 
 export default async function Home() {
   const news = await getTodayNews();
-  // console.log(news);
+
   return (
     <div className="px-8 md:px-24">
       <header className="flex justify-between py-8 items-start md:items-center ">
@@ -18,6 +19,7 @@ export default async function Home() {
 
       </header>
 
+      <SegmentedControl selected={1} />
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 ">
         {news.map((item) => (
           <div key={item.id} className="flex flex-col gap-4">
