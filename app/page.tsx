@@ -1,11 +1,21 @@
+"use client"
+import { useState, useEffect } from "react";
 import NewsCard from "@/components/NewsCard/NewsCard";
 import PopupMenu from "@/components/PopupMenu/PopupMenu";
 import SegmentedControl from "@/components/SegmentedControl/SegmentedControl";
-import { getTodayNews } from "./get-news";
+import axios from "axios";
+import News from "@/types/News";
 
-export default async function Home() {
-  const news = await getTodayNews();
+export default function Home() {
+  const [selectedSegment, setSelectedSegment] = useState(0)
+  const [news,setNews] = useState<News[] | null>()
+  
+  useEffect(() => {
+    axios.get(process.env.NEXT_PUBLIC_SERVER_ENDPOINT+"news")
+    .then(r => setNews(r.data) )
+  },[])
 
+  
   return (
     <div className="px-8 md:px-24">
       <header className="flex justify-between py-8 items-start md:items-center ">
@@ -19,9 +29,9 @@ export default async function Home() {
 
       </header>
 
-      <SegmentedControl selected={1} />
+      <SegmentedControl cb={(value:number) => {}}/>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 ">
-        {news.map((item) => (
+        { news && news.map((item) => (
           <div key={item.id} className="flex flex-col gap-4">
             <NewsCard news={item} />
           </div>
