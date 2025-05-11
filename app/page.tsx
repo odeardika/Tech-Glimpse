@@ -2,12 +2,13 @@
 import { useState, useEffect } from "react";
 import NewsCard from "@/components/NewsCard/NewsCard";
 import PopupMenu from "@/components/PopupMenu/PopupMenu";
-import SegmentedControl from "@/components/SegmentedControl/SegmentedControl";
+// import SegmentedControl from "@/components/SegmentedControl/SegmentedControl";
 import axios from "axios";
 import News from "@/types/News";
+import SkelotonCard from "@/components/NewsCard/SkeletonCard";
 
 export default function Home() {
-  const [selectedSegment, setSelectedSegment] = useState(0)
+  // const [selectedSegment, setSelectedSegment] = useState(0)
   const [news,setNews] = useState<News[] | null>()
   
   useEffect(() => {
@@ -29,9 +30,14 @@ export default function Home() {
 
       </header>
 
-      <SegmentedControl cb={(value:number) => {}}/>
+      {/* <SegmentedControl cb={(value:number) => {}}/> */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 ">
-        { news && news.map((item) => (
+        { !news?   
+        "12345".split("").map((_, index) => (
+          <SkelotonCard key={index} />
+        ))
+        : 
+        news.map((item) => (
           <div key={item.id} className="flex flex-col gap-4">
             <NewsCard news={item} />
           </div>
