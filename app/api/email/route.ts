@@ -1,12 +1,7 @@
 import sendEmail from "@/modules/email/email";
 import axios from "axios";
-
+import { getUserEmail } from "@/modules/hygraph/user";
 import News from "@/types/News";
-
-// temporary function
-const getUserEmail = () => {
-    return "odeardika.news@gmail.com"
-}
 
 export async function POST() {
     // get artcle
@@ -14,9 +9,8 @@ export async function POST() {
     const fillteredArticle = article.filter(article => (article.description && (article.description.length >= 20)) && (article.image))
 
     // get user email
-    const receiverUser = getUserEmail();
-
-
+    const receiverUser = await getUserEmail();
+    
     // get sender email and password
     const email = String(process.env.NEXT_PUBLIC_EMAIL);
     const pass = String(process.env.NEXT_PUBLIC_PASS);
@@ -29,7 +23,6 @@ export async function POST() {
             pass:pass
         }
     );
-
 
     // const info = await sendEmail(article);
     return Response.json(info);
