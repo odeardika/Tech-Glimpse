@@ -30,3 +30,15 @@ export async function removeUserEmail (email : string) {
         return data;
     }
 }
+
+export async function addUserEmail(email : string) {
+    const { data, error } = await supabase.from('usersEmail')
+    .insert({
+        email : email
+    }).select();
+
+    if (error) {
+        return error
+    }
+    return data;
+}
