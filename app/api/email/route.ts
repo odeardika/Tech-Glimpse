@@ -1,6 +1,6 @@
 import sendEmail from "@/modules/email/email";
 import axios from "axios";
-import { getUserEmail } from "@/modules/hygraph/user";
+import { getUserEmail } from "@/modules/supabase/server";
 import News from "@/types/News";
 
 export async function POST() {

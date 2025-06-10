@@ -1,0 +1,32 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL as string, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string);
+
+export async function getUserEmail () {
+    const { data, error } = await supabase.from('usersEmail')
+    .select('email,isDelete');
+
+    if (error) {
+        return JSON.stringify(error);
+    }
+
+    let listEmail = ""
+    data.forEach(user => {
+        if(!user.isDelete) {
+            listEmail += `${user.email}, `;
+        }
+    })
+
+    return listEmail;
+}
+
+export async function removeUserEmail (email : string) {
+    const { data, error } = await supabase.from('usersEmail').delete().eq('email',email).select();
+
+    if (error) {
+        return error;
+    }
+    else {
+        return data;
+    }
+}
