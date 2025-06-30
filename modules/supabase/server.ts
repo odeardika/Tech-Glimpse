@@ -42,3 +42,15 @@ export async function addUserEmail(email : string) {
     }
     return data;
 }
+
+export async function DeactivateUser(id:number) {
+    const { data, error } = await supabase.from('usersEmail')
+    .update({ isDelete: true })
+    .eq('id', id)
+    .select();
+
+    if(error) {
+        return error;
+    }
+    return data;
+}
