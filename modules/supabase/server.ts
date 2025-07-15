@@ -55,16 +55,22 @@ export async function DeactivateUser(id:number) {
     return data;
 }
 
-export async function activeDatabases () {
-    const { data1, error1 } = await supabase.from('usersEmail').insert([
+export async function activeAddDatabases () {
+    const { data, error } = await supabase.from('usersEmail').insert([
         {email : "updateemail@gmail.com", id : 0}
     ]).select();
-
-    const {data, error} = await supabase.from('usersEmail').delete().eq('id', 0).select();
 
     if(error) {
         return error;
     }
-    console.log(data)
+    return data;
+}
+
+export async function activeDeleteDatabases() {
+    const {data, error} = await supabase.from('usersEmail').delete().eq('id', 0).select();
+    
+    if(error) {
+        return error;
+    }
     return data;
 }
