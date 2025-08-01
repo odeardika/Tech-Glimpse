@@ -8,15 +8,23 @@ import News from "@/types/News";
 import SkelotonCard from "@/components/NewsCard/SkeletonCard";
 
 export default function Home() {
-  const [selectedSegment, setSelectedSegment] = useState(0)
-  const [news,setNews] = useState<News[] | null>()
-  
-  useEffect(() => {
-    axios.get(process.env.NEXT_PUBLIC_SERVER_ENDPOINT+"news")
-    .then(r => setNews(r.data) )
-  },[])
+  const [selectedSegment, setSelectedSegment] = useState(0);
+  const [news, setNews] = useState<News[] | null>();
+  const [cannotGetNews, setCannotGetNews] = useState(false);
 
-  
+  useEffect(() => {
+    axios.get("/api/news/")
+      .then(r => {
+        if(r.status === 400) {
+          setCannotGetNews(true);
+        }
+        else {
+          setNews(r.data.news);
+        }
+      });
+  }, [])
+
+
   return (
     <div className="px-8 md:px-24">
       <header className="flex justify-between py-8 items-start md:items-center ">
@@ -30,21 +38,25 @@ export default function Home() {
 
       </header>
 
-      <SegmentedControl cb={(value:number) => {setSelectedSegment(value)}}/>
-      <div className={`grid gap-4 ${selectedSegment === 0? "grid-cols-2 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-3"} `}>
-        { !news?   
-        "12345".split("").map((_, index) => (
-          <SkelotonCard key={index} />
-        ))
-        : 
-        news.map((item) => (
-          <div key={item.id} className="flex flex-col gap-4">
-            <NewsCard news={item} />
-          </div>
-        ))}
-
+      <SegmentedControl cb={(value: number) => { setSelectedSegment(value) }} />
+      {cannotGetNews? 
+      <div className="flex h-36 w-full justify-center items-center">
+        <h3 className="text-xl font-bold">Failed to get news, please try again later</h3>
       </div>
-      
+      : 
+      <div className={`grid gap-4 ${selectedSegment === 0 ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-5" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"} `}>
+        {!news ?
+          "12345".split("").map((_, index) => (
+            <SkelotonCard key={index} />
+          ))
+          :
+          news.map((item) => (
+            <div key={item.id} className="flex flex-col gap-4">
+              <NewsCard news={item} />
+            </div>
+          ))}
+      </div>}
+
     </div>
   );
 }
