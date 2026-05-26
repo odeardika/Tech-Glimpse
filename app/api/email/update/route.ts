@@ -1,5 +1,7 @@
 import { DeactivateUser, activeAddDatabases, activeDeleteDatabases } from "@/modules/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export async function PUT () {
     // deactivate spesific user to keep database active
     const res = await DeactivateUser(15);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import News from "@/types/News";
@@ -31,7 +31,7 @@ const LIST_FEEDS: Feed[] = ["askstories", "jobstories"];
 const VALID_FEEDS = new Set<Feed>(["topstories", "beststories", "newstories", "askstories", "jobstories"]);
 const PAGE_SIZE = 10;
 
-export default function NewsPage() {
+function NewsPageInner() {
   const searchParams = useSearchParams();
   const feedParam = searchParams.get("feed") as Feed | null;
   const initialFeed: Feed = feedParam && VALID_FEEDS.has(feedParam) ? feedParam : "topstories";
@@ -236,5 +236,13 @@ export default function NewsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function NewsPage(): React.ReactElement {
+  return (
+    <Suspense>
+      <NewsPageInner />
+    </Suspense>
   );
 }
