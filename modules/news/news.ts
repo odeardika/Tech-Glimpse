@@ -9,7 +9,7 @@ function getFavicon(url: string, favicon: string) {
     return urlParts[0] + '//' + urlParts[2] + favicon;
 }
 
-async function getNewsMetadata(url: string) {
+export async function getNewsMetadata(url: string) {
     try {
         const html = await axios.get(url);
         const $ = cheerio.load(html.data);
@@ -99,6 +99,15 @@ async function buildNewsItem(item: HNItem, fetchMeta = true): Promise<News> {
 export async function getNews(): Promise<News[]> {
     const ids: number[] = await getListNews(`${HN_BASE}/topstories.json?print=pretty`);
     return Promise.all(ids.slice(0, 30).map((id) => fetchHNItem(id).then((item) => buildNewsItem(item, true))));
+}
+
+export async function getNewsByIds(
+    ids: number[],
+    fetchMeta = true
+): Promise<News[]> {
+    return Promise.all(
+        ids.map((id) => fetchHNItem(id).then((item) => buildNewsItem(item, fetchMeta)))
+    );
 }
 
 export async function getNewsByFeed(

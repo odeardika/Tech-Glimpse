@@ -1,14 +1,22 @@
-import React from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import News from "@/types/News";
 import { cn } from "@/lib/utils";
-import { ArrowUp, MessageSquare, User } from "lucide-react";
+import { ArrowUp, MessageSquare, Clock } from "lucide-react";
 
 interface NewsCardProps {
   news: News;
   className?: string;
   variant?: "card" | "list";
+}
+
+interface EnrichedMeta {
+  image: string | null;
+  description: string | null;
+  favicon: string | null;
 }
 
 function formatTime(unix?: number): string {
@@ -19,36 +27,41 @@ function formatTime(unix?: number): string {
   return `${Math.floor(diff / 1440)}d ago`;
 }
 
-function MetaRow({ news }: { news: News }) {
-  return (
-    <div className="flex items-center gap-3 mt-auto pt-2 text-xs text-muted-foreground font-mono">
-      {news.score !== undefined && (
-        <span className="flex items-center gap-1">
-          <ArrowUp size={11} strokeWidth={2} className="text-accent" />
-          {news.score}
-        </span>
-      )}
-      {news.descendants !== undefined && (
-        <span className="flex items-center gap-1">
-          <MessageSquare size={11} strokeWidth={1.5} />
-          {news.descendants}
-        </span>
-      )}
-      {news.by && (
-        <span className="flex items-center gap-1 truncate">
-          <User size={11} strokeWidth={1.5} />
-          {news.by}
-        </span>
-      )}
-      {news.time && (
-        <span className="ml-auto shrink-0">{formatTime(news.time)}</span>
-      )}
-    </div>
-  );
+function typeLabel(type: News["type"]): string {
+  if (type === "job") return "Job";
+  if (type === "ask") return "Ask HN";
+  if (type === "show") return "Show HN";
+  return "Tech";
+}
+
+function useEnrichedMeta(news: News): EnrichedMeta {
+  const [meta, setMeta] = useState<EnrichedMeta>({
+    image: news.image,
+    description: news.description,
+    favicon: news.favicon,
+  });
+
+  useEffect(() => {
+    if (news.image || !news.url || news.type === "job" || news.type === "ask") return;
+
+    let cancelled = false;
+    fetch(`/api/news/meta?url=${encodeURIComponent(news.url)}`)
+      .then((r) => r.json())
+      .then((data: EnrichedMeta) => {
+        if (!cancelled) setMeta(data);
+      })
+      .catch(() => {/* silent */});
+
+    return () => { cancelled = true; };
+  }, [news.id, news.url, news.image, news.type]);
+
+  return meta;
 }
 
 function CardVariant({ news, className }: { news: News; className?: string }) {
-  const imagePreview = news.image ?? news.favicon ?? "/placeholder.png";
+  const meta = useEnrichedMeta(news);
+  const imagePreview = meta.image ?? meta.favicon ?? null;
+  const hasImage = !!imagePreview;
 
   return (
     <Link
@@ -56,32 +69,83 @@ function CardVariant({ news, className }: { news: News; className?: string }) {
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "group flex flex-col rounded-xl border border-border bg-card overflow-hidden card-hover shadow-xs hover:shadow-md hover:border-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-full",
+        "group flex flex-col rounded-xl border border-border bg-card overflow-hidden",
+        "shadow-sm hover:shadow-lg hover:border-accent/30",
+        "transition-all duration-200 ease-out hover:-translate-y-0.5",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-full",
         className
       )}
     >
+      {/* Image */}
       <div className="aspect-video overflow-hidden relative bg-muted shrink-0">
-        <Image
-          src={imagePreview}
-          alt={news.title}
-          fill
-          className="object-cover transition-transform duration-400 group-hover:scale-[1.03] dark:brightness-90"
-          unoptimized
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-        />
+        {hasImage ? (
+          <Image
+            src={imagePreview}
+            alt={news.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105 dark:brightness-85"
+            unoptimized
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+          />
+        ) : (
+          /* Placeholder: shimmer + centered category label */
+          <div className="w-full h-full shimmer-skeleton flex items-center justify-center">
+            <span className="text-xs font-mono font-medium text-muted-foreground/50 uppercase tracking-widest select-none">
+              {typeLabel(news.type)}
+            </span>
+          </div>
+        )}
+
+        {/* Category badge — overlaid on image bottom-left */}
+        {hasImage && (
+          <div className="absolute bottom-2.5 left-2.5">
+            <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-background/80 backdrop-blur-sm text-accent border border-accent/20">
+              {typeLabel(news.type)}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="flex flex-col gap-2 p-4 flex-1">
-        <span className="inline-block self-start text-xs font-medium uppercase tracking-wider text-accent bg-accent/10 border border-accent/20 rounded-full px-2.5 py-0.5">
-          {news.type === "job" ? "Job" : news.type === "ask" ? "Ask HN" : news.type === "show" ? "Show HN" : "Tech"}
-        </span>
-        <h3 className="font-semibold text-base leading-snug line-clamp-2 text-foreground group-hover:text-accent transition-colors">
+      {/* Body */}
+      <div className="flex flex-col gap-2.5 p-4 flex-1 min-h-0 overflow-hidden">
+        {/* Category badge when no image */}
+        {!hasImage && (
+          <span className="self-start text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full text-accent bg-accent/10 border border-accent/20">
+            {typeLabel(news.type)}
+          </span>
+        )}
+
+        <h3 className="font-display font-bold text-sm leading-snug line-clamp-2 text-foreground group-hover:text-accent transition-colors duration-150">
           {news.title}
         </h3>
-        <p className="text-sm text-muted-foreground line-clamp-3 flex-1">
-          {news.description ?? news.title}
-        </p>
-        <MetaRow news={news} />
+
+        {meta.description && (
+          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed flex-1 overflow-hidden">
+            {meta.description}
+          </p>
+        )}
+
+        {/* Meta row */}
+        <div className="flex items-center gap-3 pt-1 mt-auto border-t border-border/60">
+          {news.score !== undefined && (
+            <span className="flex items-center gap-1 text-xs font-semibold text-foreground">
+              <ArrowUp size={12} strokeWidth={2.5} className="text-accent" />
+              {news.score}
+            </span>
+          )}
+          {news.descendants !== undefined && (
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MessageSquare size={11} strokeWidth={1.5} />
+              {news.descendants}
+            </span>
+          )}
+          {news.time && (
+            <span className="flex items-center gap-1 text-xs text-muted-foreground ml-auto font-mono">
+              <Clock size={10} strokeWidth={1.5} />
+              {formatTime(news.time)}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );
@@ -94,24 +158,39 @@ function ListVariant({ news, className }: { news: News; className?: string }) {
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "group flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-accent/20 hover:shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "group flex items-start gap-4 px-4 py-3.5 rounded-xl border border-border bg-card",
+        "hover:border-accent/30 hover:shadow-sm hover:bg-accent/2",
+        "transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className
       )}
     >
-      <div className="flex flex-col items-center gap-0.5 shrink-0 pt-0.5 min-w-[36px]">
-        <ArrowUp size={14} strokeWidth={2} className="text-accent" />
-        <span className="text-xs font-mono font-medium text-foreground">{news.score ?? 0}</span>
+      {/* Score column */}
+      <div className="flex flex-col items-center gap-0.5 shrink-0 pt-0.5 min-w-9 text-center">
+        <ArrowUp size={13} strokeWidth={2.5} className="text-accent" />
+        <span className="text-xs font-bold font-mono text-foreground leading-none">{news.score ?? 0}</span>
       </div>
-      <div className="flex flex-col gap-1 flex-1 min-w-0">
-        <h3 className="font-medium text-sm leading-snug line-clamp-2 text-foreground group-hover:text-accent transition-colors">
+
+      {/* Content */}
+      <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+        <h3 className="font-medium text-sm leading-snug line-clamp-2 text-foreground group-hover:text-accent transition-colors duration-150">
           {news.title}
         </h3>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground font-mono">
-          {news.by && <span className="flex items-center gap-1"><User size={10} strokeWidth={1.5} />{news.by}</span>}
-          {news.descendants !== undefined && (
-            <span className="flex items-center gap-1"><MessageSquare size={10} strokeWidth={1.5} />{news.descendants} comments</span>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground font-mono flex-wrap">
+          {news.by && (
+            <span className="font-medium text-foreground/70">{news.by}</span>
           )}
-          {news.time && <span className="ml-auto shrink-0">{formatTime(news.time)}</span>}
+          {news.descendants !== undefined && (
+            <span className="flex items-center gap-1">
+              <MessageSquare size={10} strokeWidth={1.5} />
+              {news.descendants}
+            </span>
+          )}
+          {news.time && (
+            <span className="flex items-center gap-1 ml-auto shrink-0">
+              <Clock size={10} strokeWidth={1.5} />
+              {formatTime(news.time)}
+            </span>
+          )}
         </div>
       </div>
     </Link>

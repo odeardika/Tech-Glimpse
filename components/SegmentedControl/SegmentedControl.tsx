@@ -9,7 +9,7 @@ interface SegmentedControlProps {
 }
 
 export default function SegmentedControl({ cb }: SegmentedControlProps) {
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(1);
 
   const select = (value: number) => {
     setSelected(value);
