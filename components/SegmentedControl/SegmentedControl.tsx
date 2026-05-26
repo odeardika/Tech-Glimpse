@@ -1,50 +1,51 @@
-'use client'
-import { useState } from 'react';
-import Image from 'next/image';
-import smallerIcon from '@/public/icons/SegmentIcon-Smaller.svg';
-import biggerIcon from '@/public/icons/SegmentIcon-Bigger.svg';
+"use client";
 
-type props = {
-    cb : (value : number) => void
+import { useState } from "react";
+import { LayoutGrid, LayoutList } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface SegmentedControlProps {
+  cb: (value: number) => void;
 }
 
-function SegmentedControl(props : props) {
+export default function SegmentedControl({ cb }: SegmentedControlProps) {
+  const [selected, setSelected] = useState(0);
 
-    const [segmentControlSelected,setSegmentControlSelected] = useState(0);
-    
-    
+  const select = (value: number) => {
+    setSelected(value);
+    cb(value);
+  };
+
   return (
-    <>
-        <div className='flex justify-end p-4'>
-            <div className={`border-2 border-gray-300 px-4 py-1 rounded-l-lg hover:cursor-pointer  ${segmentControlSelected === 1? "hover:bg-gray-200": "bg-gray-300"}`}
-                onClick={() => {
-                    props.cb(0)
-                    setSegmentControlSelected(0)}}
-            >
-                <Image 
-                className='w-8'
-                src={smallerIcon} 
-                width={0}
-                height={0}
-                alt='icon'
-                />
-            </div>
-            <div className={`border-2 border-gray-300 px-4 py-1 rounded-r-lg hover:cursor-pointer  ${segmentControlSelected === 0? "hover:bg-gray-200": "bg-gray-300"}`}
-            onClick={() => {
-                props.cb(1)
-                setSegmentControlSelected(1)}}
-            >
-                <Image 
-                className='w-8'
-                src={biggerIcon} 
-                width={0}
-                height={0}
-                alt='icon'
-                />
-            </div>
-        </div>
-    </>
-  )
+    <div className="flex justify-end px-0 py-4">
+      <div className="inline-flex bg-muted p-1 rounded-full gap-0.5">
+        <button
+          onClick={() => select(0)}
+          aria-label="Compact view"
+          aria-pressed={selected === 0}
+          className={cn(
+            "flex items-center justify-center px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            selected === 0
+              ? "bg-background shadow-sm text-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <LayoutGrid size={18} strokeWidth={1.5} />
+        </button>
+        <button
+          onClick={() => select(1)}
+          aria-label="Expanded view"
+          aria-pressed={selected === 1}
+          className={cn(
+            "flex items-center justify-center px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            selected === 1
+              ? "bg-background shadow-sm text-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <LayoutList size={18} strokeWidth={1.5} />
+        </button>
+      </div>
+    </div>
+  );
 }
-
-export default SegmentedControl

@@ -5,4 +5,9 @@ export default interface News {
     description: string | null;
     image: string | null;
     favicon: string | null;
+    score?: number;
+    descendants?: number;
+    by?: string;
+    time?: number;
+    type?: "story" | "job" | "ask" | "show" | "poll";
 }
