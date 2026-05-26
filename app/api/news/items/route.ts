@@ -4,8 +4,6 @@ import { getNewsByIds } from "@/modules/news/news";
 export async function GET(request: NextRequest) {
     const { searchParams } = request.nextUrl;
     const idsParam = searchParams.get("ids") ?? "";
-    const feed = searchParams.get("feed") ?? "topstories";
-
     const ids = idsParam
         .split(",")
         .map(Number)
