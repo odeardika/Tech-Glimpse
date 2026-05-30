@@ -22,21 +22,27 @@ export default function PopupMenu({ variant = "primary", label = "Subscribe" }: 
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [duplicate, setDuplicate] = useState(false);
 
   const handleSubscribe = async () => {
     if (!email) return;
     setIsLoading(true);
+    setDuplicate(false);
     try {
       await axios.post("/api/email/create", { email });
       setSuccess(true);
       setEmail("");
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        setDuplicate(true);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog onOpenChange={() => setSuccess(false)}>
+    <Dialog onOpenChange={() => { setSuccess(false); setDuplicate(false); }}>
       <DialogTrigger asChild>
         <button
           className={cn(
@@ -67,7 +73,7 @@ export default function PopupMenu({ variant = "primary", label = "Subscribe" }: 
         {success ? (
           <div className="mt-4 p-4 rounded-lg bg-accent/10 border border-accent/20 text-center">
             <p className="text-sm font-medium text-accent">You&apos;re subscribed!</p>
-            <p className="text-xs text-muted-foreground mt-1">Check your inbox for a confirmation.</p>
+            <p className="text-xs text-muted-foreground mt-1">Welcome! Check your inbox for a hello from us.</p>
           </div>
         ) : (
           <form
@@ -93,6 +99,11 @@ export default function PopupMenu({ variant = "primary", label = "Subscribe" }: 
               {isLoading && <Loader2 size={16} className="animate-spin" />}
               {isLoading ? "Subscribing…" : "Subscribe"}
             </button>
+            {duplicate && (
+              <p className="text-xs text-center text-muted-foreground">
+                This email is already subscribed.
+              </p>
+            )}
           </form>
         )}
       </DialogContent>

@@ -14,13 +14,18 @@ const stack = [
   },
   {
     icon: Database,
-    name: "Supabase",
-    description: "PostgreSQL database for storing newsletter subscribers.",
+    name: "Google Sheets",
+    description: "Lightweight subscriber storage via Google Sheets API — simple, transparent, no extra infra.",
   },
   {
     icon: Zap,
     name: "Tailwind CSS v4",
     description: "Utility-first styling with a custom design system — warm neutrals, indigo accent.",
+  },
+  {
+    icon: Mail,
+    name: "Resend",
+    description: "Transactional email delivery for welcome emails and daily newsletters, sent from a custom domain.",
   },
 ];
 
@@ -111,7 +116,9 @@ export default function AboutPage() {
 
         <div className="flex flex-wrap gap-3">
           <a
-            href="mailto:design@newgenwebdevelopment.com"
+            href="https://mail.google.com/mail/?view=cm&to=dirfanardika@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md border border-border bg-card text-sm font-medium text-foreground hover:border-accent/40 hover:bg-accent/5 transition-all duration-200"
           >
             <Mail size={15} strokeWidth={1.5} className="text-accent" />

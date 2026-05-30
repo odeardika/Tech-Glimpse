@@ -1,5 +1,6 @@
 import validator from 'email-validator';
 import { addUserEmail } from '@/modules/sheets/server';
+import { sendWelcomeEmail } from '@/modules/email/welcome';
 
 export async function POST(req: Request): Promise<Response> {
     const body = await req.json();
@@ -15,6 +16,10 @@ export async function POST(req: Request): Promise<Response> {
 
     try {
         await addUserEmail(email);
+        // fire-and-forget welcome email — don't block subscribe response
+        sendWelcomeEmail(email).catch((err) =>
+            console.error("[welcome-email]", err)
+        );
         return Response.json({ success: true });
     } catch (err) {
         if (err instanceof Error && err.message === "DUPLICATE_EMAIL") {

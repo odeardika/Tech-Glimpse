@@ -9,15 +9,21 @@ function InlineSubscribe() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [duplicate, setDuplicate] = useState(false);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setIsLoading(true);
+    setDuplicate(false);
     try {
       await axios.post("/api/email/create", { email });
       setSuccess(true);
       setEmail("");
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        setDuplicate(true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -26,30 +32,35 @@ function InlineSubscribe() {
   if (success) {
     return (
       <p className="text-xs text-accent font-medium py-2">
-        ✓ You&apos;re subscribed! Check your inbox.
+        ✓ You&apos;re in! Check your inbox for a welcome email.
       </p>
     );
   }
 
   return (
-    <form onSubmit={handleSubscribe} className="flex gap-2">
-      <input
-        type="email"
-        placeholder="your@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow min-w-0"
-      />
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="bg-accent text-accent-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0 cursor-pointer"
-      >
-        {isLoading && <Loader2 size={14} className="animate-spin" />}
-        {isLoading ? "…" : "Join"}
-      </button>
-    </form>
+    <div className="flex flex-col gap-1.5">
+      <form onSubmit={handleSubscribe} className="flex gap-2">
+        <input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow min-w-0"
+        />
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="bg-accent text-accent-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0 cursor-pointer"
+        >
+          {isLoading && <Loader2 size={14} className="animate-spin" />}
+          {isLoading ? "…" : "Join"}
+        </button>
+      </form>
+      {duplicate && (
+        <p className="text-xs text-muted-foreground">This email is already subscribed.</p>
+      )}
+    </div>
   );
 }
 
