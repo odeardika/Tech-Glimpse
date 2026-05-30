@@ -1,6 +1,6 @@
 import sendEmail from "@/modules/email/email";
 import axios from "axios";
-import { getUserEmail } from "@/modules/supabase/server";
+import { getUserEmail } from "@/modules/sheets/server";
 import News from "@/types/News";
 
 export async function GET() {

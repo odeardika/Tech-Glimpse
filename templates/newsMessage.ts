@@ -1,6 +1,6 @@
 import News from "@/types/News";
 
-export default function template (article : News[]) {
+export default function template(article: News[], unsubscribeUrl: string): string {
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -63,7 +63,8 @@ export default function template (article : News[]) {
                     <tr>
                         <td align="center" style="font-size:12px; color:#888888; font-family:Arial, sans-serif; padding-top:2rem; padding-bottom:2rem;">
                             &copy; 2025 Ode Ardika. All rights reserved.<br>
-                            If you want more news <a href="https://tech-glimpse.odeardika.my.id/" style="color:#888888;">click here</a>.
+                            If you want more news <a href="https://tech-glimpse.odeardika.my.id/" style="color:#888888;">click here</a>.<br><br>
+                            <a href="${unsubscribeUrl}" style="color:#aaaaaa; text-decoration:underline;">Unsubscribe</a>
                         </td>
                     </tr>
                 </table>
@@ -71,6 +72,6 @@ export default function template (article : News[]) {
         </tr>
     </table>
 </body>
-</html>    
+</html>
 `
 }
