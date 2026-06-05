@@ -1,45 +1,47 @@
-# 🚀 Tech Glimpse
+# Tech Glimpse
 
-**Tech Glimpse** is a modern web application that delivers the latest technology news daily. Built with Next.js, the site fetches and displays real-time tech-related stories using the Hacker News API. Whether you're a developer, enthusiast, or just curious about the latest trends, Tech Glimpse helps you stay updated with a clean and responsive interface.
+A clean tech news reader that pulls stories from Hacker News and presents them with metadata (images, descriptions) rather than just bare links.
 
-## 📦 Tech Stack
-![NEXTJS](https://img.shields.io/badge/NEXTJS-000000?style=for-the-badge&logo=nextdotjs) ![Tailwind](https://img.shields.io/badge/TAILWIND-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white) ![Shadcn](https://img.shields.io/badge/ShadCN-000000?style=for-the-badge&logo=shadcnui&logoColor=white) ![VERCEL](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white) ![HackerNews](https://img.shields.io/badge/hackernews-F0652F?style=for-the-badge&logo=ycombinator&logoColor=white)
+Built with Next.js, deployed on Vercel.
 
-## 🌟 Features
+## Stack
 
-- [x] Get article automaticly from HackerNews API.
-- [x] Update article every 1 minute.
-- [x] Get metadata image from article website.
-- [ ] Send Email for daily article.
+Next.js 15 (App Router) · Tailwind CSS v4 · Radix UI · Resend · Google Sheets
 
-## 🌐 Usage
+Data from [Hacker News Firebase API](https://github.com/HackerNews/API).
 
-Try the website by clicking [here](https://tech-glimpse.odeardika.my.id/).
+## Features
 
-## 🛠️ Installation
+- Fetches top, best, new, Ask HN, and job stories from Hacker News
+- Enriches each link with Open Graph metadata (image, description)
+- Compact and expanded card views
+- Infinite scroll on browse page
+- Dark mode with system preference detection + manual toggle
+- Daily email newsletter via Resend
+- Email unsubscribe flow
 
-- Clone the repository or use GitHub Codespace:
-```
+### In progress / planned
+
+- [ ] Detail page — view story comments without leaving the site
+- [ ] Reading time estimate per article
+- [ ] Search — filter fetched stories client-side
+- [ ] Share button — copy link or share to social media
+- [ ] PWA — installable on mobile
+- [ ] RSS feed
+
+## Usage
+
+Try it at [tech-glimpse.odeardika.com](https://tech-glimpse.odeardika.com).
+
+## Install
+
+```bash
 git clone https://github.com/odeardika/Tech-Glimpse.git
+cd Tech-Glimpse
+bun install
+bun dev
 ```
-- Install dependencies:
-```
-npm install
-```
-or
-```
-yarn
-```
-- Run the app:
-```
-npm run dev
-```
-```
-yarn dev
-```
-## 📝 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## License
 
-
-
+MIT
