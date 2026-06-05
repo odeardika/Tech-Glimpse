@@ -88,21 +88,8 @@ function CardVariant({ news, className }: { news: News; className?: string }) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
         ) : (
-          /* Placeholder: shimmer + centered category label */
-          <div className="w-full h-full shimmer-skeleton flex items-center justify-center">
-            <span className="text-xs font-mono font-medium text-muted-foreground/50 uppercase tracking-widest select-none">
-              {typeLabel(news.type)}
-            </span>
-          </div>
-        )}
-
-        {/* Category badge — overlaid on image bottom-left */}
-        {hasImage && (
-          <div className="absolute bottom-2.5 left-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-background/80 backdrop-blur-sm text-accent border border-accent/20">
-              {typeLabel(news.type)}
-            </span>
-          </div>
+          /* Placeholder: shimmer only — no overlaid text */
+          <div className="w-full h-full shimmer-skeleton" />
         )}
       </div>
 

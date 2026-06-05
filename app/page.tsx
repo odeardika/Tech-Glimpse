@@ -70,11 +70,21 @@ async function FeaturedNews() {
 async function BestStories() {
   const news = await fetchFeed("beststories", 3);
   if (news.length === 0) return null;
+  const [featured, ...rest] = news;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {news.map((item) => (
-        <NewsCard key={item.id} news={item} />
-      ))}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Featured — full width on mobile, spans left col on desktop */}
+      {featured && (
+        <div className="lg:row-span-2 flex flex-col">
+          <NewsCard news={featured} className="h-full" />
+        </div>
+      )}
+      {/* Remaining cards — stack vertically */}
+      <div className="flex flex-col gap-6">
+        {rest.map((item) => (
+          <NewsCard key={item.id} news={item} variant="list" />
+        ))}
+      </div>
     </div>
   );
 }
@@ -181,8 +191,7 @@ export default function Home() {
       {/* ── Hero ── */}
       <section className="py-20 md:py-28 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="animate-fade-up space-y-6">
-          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-accent bg-accent/10 border border-accent/20 rounded-full px-3 py-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-accent rounded-full">
             Daily tech digest
           </div>
           <h1 className="font-display font-bold text-5xl md:text-6xl xl:text-7xl tracking-tight leading-[1.05] text-foreground">
@@ -204,29 +213,25 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right: decorative dummy article cards */}
+        {/* Right: featured story preview — real images, no inline SVGs or emojis */}
         <div className="hidden lg:flex flex-col gap-4 animate-fade-in" style={{ animationDelay: "150ms" }}>
-          {/* Featured card — OpenAI / GPT-5 */}
+          {/* Featured card — clean image, no badge overlay */}
           <div className="relative">
             <div className="absolute inset-0 translate-x-4 translate-y-4 bg-accent/5 border border-accent/10 rounded-2xl" />
             <div className="absolute inset-0 translate-x-2 translate-y-2 bg-accent/8 border border-accent/15 rounded-2xl" />
             <div className="relative bg-card border border-border rounded-2xl overflow-hidden shadow-md">
-              {/* Thumbnail */}
-              <div className="aspect-video bg-[#0d0d0d] relative overflow-hidden flex items-center justify-center">
-                <div className="absolute inset-0 bg-linear-to-br from-[#10a37f]/30 via-transparent to-transparent" />
-                {/* OpenAI logo SVG inline */}
-                <svg viewBox="0 0 320 320" className="w-20 h-20 opacity-90" fill="white" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M297.1 130.6c7.4-21.7 5-45.4-6.5-65.2-17.3-29.9-51.2-45.3-85-37.7C191.3 10.5 170.1 0 147.5 0 113.4 0 83.4 22.1 73.1 54.5 51.2 58.9 32 72.5 20.3 92.1c-17.5 30-13.5 67.6 9.9 93.3-7.4 21.7-5 45.4 6.5 65.2 17.3 29.9 51.2 45.3 85 37.7 13.3 17.3 34.5 27.7 57.1 27.7 34.1 0 64.1-22.1 74.4-54.5 21.9-4.4 41.1-18 52.8-37.6 17.5-30 13.5-67.6-9.9-93.3zm-130 174.2c-14.7 0-28.8-5.1-39.9-14.4l2-1.1 66.3-38.3c3.3-1.9 5.4-5.5 5.4-9.3V141l28 16.2c.3.2.5.5.5.8v77.5c0 38.3-31.1 69.3-62.3 69.3zM45.2 253.5c-7.4-12.8-10-27.8-7.3-42.3l2 1.2 66.3 38.3c3.3 1.9 7.4 1.9 10.7 0l80.9-46.7v32.4c0 .4-.2.7-.5.9l-67 38.7c-33.1 19.1-75.5 7.8-85.1-22.5zM29.1 105c7.3-12.7 18.9-22.4 32.7-27.3v79c0 3.8 2 7.3 5.4 9.3l80.9 46.7-28 16.2c-.3.2-.7.2-1 0l-66.9-38.7C19 170.8 8.2 128.5 29.1 105zm229.6 59.6-80.9-46.7 28-16.2c.3-.2.7-.2 1 0l66.9 38.7c33.2 19.2 44 61.6 23.1 84.8-7.4 12.7-18.9 22.4-32.7 27.3V173c0-3.8-2-7.3-5.4-9.4zm27.9-42.6-2-1.2-66.3-38.3c-3.3-1.9-7.4-1.9-10.7 0L127 129.2V96.8c0-.4.2-.7.5-.9l67-38.6c33.2-19.2 75.6-7.7 85.1 22.7 7.3 12.8 10 27.8 7.3 42.3l-3.3-.3zm-175.4 57.7-28-16.2c-.3-.2-.5-.5-.5-.8v-77.5c0-38.4 31.5-69.6 63-69.3 14.7 0 28.8 5.1 39.9 14.4l-2 1.1-66.3 38.3c-3.3 1.9-5.4 5.5-5.4 9.3v93.3l-0.7.4zm15.2-32.8 36-20.8 36 20.7v41.5l-36 20.8-36-20.8V147z"/>
-                </svg>
-                <div className="absolute inset-0 bg-linear-to-t from-[#0d0d0d]/80 to-transparent" />
-                <div className="absolute bottom-2.5 left-2.5">
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-background/80 backdrop-blur-sm text-accent border border-accent/20">
-                    AI
-                  </span>
-                </div>
+              <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-accent/20 via-accent/5 to-background">
+                <img
+                  src="https://picsum.photos/seed/openai-headquarters/600/338"
+                  alt=""
+                  className="w-full h-full object-cover opacity-80"
+                  loading="lazy"
+                />
               </div>
-              {/* Body */}
               <div className="p-5 space-y-2.5">
+                <span className="inline-flex text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full text-accent bg-accent/10 border border-accent/20">
+                  AI
+                </span>
                 <h3 className="font-display font-bold text-sm leading-snug text-foreground">
                   GPT-5 achieves superhuman performance on software engineering benchmarks
                 </h3>
@@ -250,29 +255,20 @@ export default function Home() {
 
           {/* Two smaller cards */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Linux / kernel.org */}
+            {/* Linux — real image, no overlaid badge */}
             <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs">
-              <div className="aspect-video bg-[#1a1a2e] relative flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-linear-to-br from-yellow-400/20 via-transparent to-transparent" />
-                {/* Tux penguin simplified SVG */}
-                <svg viewBox="0 0 100 100" className="w-14 h-14 opacity-85" xmlns="http://www.w3.org/2000/svg">
-                  <ellipse cx="50" cy="35" rx="22" ry="26" fill="#f5d042"/>
-                  <ellipse cx="50" cy="60" rx="18" ry="22" fill="#1a1a1a"/>
-                  <ellipse cx="50" cy="62" rx="11" ry="14" fill="#f5f0dc"/>
-                  <circle cx="43" cy="30" r="4" fill="#1a1a1a"/>
-                  <circle cx="57" cy="30" r="4" fill="#1a1a1a"/>
-                  <ellipse cx="50" cy="39" rx="5" ry="3.5" fill="#f5821f"/>
-                  <ellipse cx="35" cy="68" rx="7" ry="4" fill="#f5821f" transform="rotate(-20 35 68)"/>
-                  <ellipse cx="65" cy="68" rx="7" ry="4" fill="#f5821f" transform="rotate(20 65 68)"/>
-                </svg>
-                <div className="absolute inset-0 bg-linear-to-t from-[#1a1a2e]/90 to-transparent" />
-                <div className="absolute bottom-2 left-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-background/80 backdrop-blur-sm text-accent border border-accent/20">
-                    Open Source
-                  </span>
-                </div>
+              <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-yellow-400/10 to-background">
+                <img
+                  src="https://picsum.photos/seed/linux-7-kernel/300/169"
+                  alt=""
+                  className="w-full h-full object-cover opacity-80"
+                  loading="lazy"
+                />
               </div>
               <div className="p-3 space-y-1.5">
+                <span className="inline-flex text-[10px] font-medium uppercase tracking-widest px-1.5 py-0.5 rounded-full text-accent bg-accent/10 border border-accent/20">
+                  Open Source
+                </span>
                 <h3 className="font-display font-bold text-xs leading-snug text-foreground line-clamp-2">
                   Linux kernel 7.0 ships with Rust as first-class language
                 </h3>
@@ -286,23 +282,20 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Bun */}
+            {/* Bun — clean, no emoji */}
             <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs">
-              <div className="aspect-video bg-[#fbf0dd] relative flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-linear-to-br from-orange-300/30 via-transparent to-transparent" />
-                {/* Bun logo — the bun emoji / wordmark approximation */}
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-4xl leading-none select-none">🍞</span>
-                  <span className="text-[10px] font-black tracking-widest text-orange-900/60 uppercase font-mono">bun</span>
-                </div>
-                <div className="absolute inset-0 bg-linear-to-t from-[#fbf0dd]/90 to-transparent" />
-                <div className="absolute bottom-2 left-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-background/80 backdrop-blur-sm text-accent border border-accent/20">
-                    Web
-                  </span>
-                </div>
+              <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-orange-400/15 to-background">
+                <img
+                  src="https://picsum.photos/seed/bun-javascript-runtime/300/169"
+                  alt=""
+                  className="w-full h-full object-cover opacity-80"
+                  loading="lazy"
+                />
               </div>
               <div className="p-3 space-y-1.5">
+                <span className="inline-flex text-[10px] font-medium uppercase tracking-widest px-1.5 py-0.5 rounded-full text-accent bg-accent/10 border border-accent/20">
+                  Web
+                </span>
                 <h3 className="font-display font-bold text-xs leading-snug text-foreground line-clamp-2">
                   Bun 2.0 outruns Node by 4× in latest HTTP benchmark suite
                 </h3>
@@ -410,7 +403,7 @@ export default function Home() {
               Subscribe and get the best tech news delivered to your inbox every morning.
             </p>
           </div>
-          <PopupMenu variant="primary" label="Subscribe — it's free" />
+          <PopupMenu variant="primary" label="Subscribe - it's free" />
         </div>
       </section>
 

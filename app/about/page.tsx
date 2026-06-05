@@ -10,17 +10,17 @@ const stack = [
   {
     icon: Globe,
     name: "Hacker News API",
-    description: "Real-time stories fetched directly from the official Firebase API — no middleman.",
+    description: "Real-time stories fetched directly from the official Firebase API, no middleman.",
   },
   {
     icon: Database,
     name: "Google Sheets",
-    description: "Lightweight subscriber storage via Google Sheets API — simple, transparent, no extra infra.",
+    description: "Lightweight subscriber storage via Google Sheets API. Simple, transparent, no extra infra.",
   },
   {
     icon: Zap,
     name: "Tailwind CSS v4",
-    description: "Utility-first styling with a custom design system — warm neutrals, indigo accent.",
+    description: "Utility-first styling with a custom design system: warm neutrals, indigo accent.",
   },
   {
     icon: Mail,
@@ -43,7 +43,7 @@ export default function AboutPage() {
         </h1>
         <p className="text-lg text-muted-foreground leading-relaxed mb-4">
           Tech Glimpse is a clean, fast reader for technology news. It surfaces the best stories from
-          Hacker News — one of the most signal-dense tech communities on the internet — and presents
+          Hacker News, one of the most signal-dense tech communities on the internet, and presents
           them in a distraction-free, well-designed interface.
         </p>
         <p className="text-base text-muted-foreground leading-relaxed">
@@ -59,7 +59,7 @@ export default function AboutPage() {
         </h2>
         <p className="text-muted-foreground mb-10">
           Tech Glimpse pulls live data from the Hacker News Firebase API and enriches it with
-          Open Graph metadata — so you see real images and descriptions, not just bare links.
+          Open Graph metadata so you see real images and descriptions, not just bare links.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -99,7 +99,7 @@ export default function AboutPage() {
           or Y Combinator.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          The feeds available — Top, Best, New, Ask HN, and Jobs — map directly to the official HN
+          The feeds available (Top, Best, New, Ask HN, and Jobs) map directly to the official HN
           API endpoints. Story rankings and scores are pulled live and reflect the community vote at
           fetch time.
         </p>
@@ -111,7 +111,7 @@ export default function AboutPage() {
           Get in touch
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-8 max-w-xl">
-          Feedback, bug reports, or collaboration ideas — reach out through any of the channels below.
+          Feedback, bug reports, or collaboration ideas: reach out through any of the channels below.
         </p>
 
         <div className="flex flex-wrap gap-3">

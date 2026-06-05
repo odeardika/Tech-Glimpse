@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sun, Moon } from "lucide-react";
@@ -10,23 +10,32 @@ import { cn } from "@/lib/utils";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const { isDark, toggle } = useTheme();
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setScrolled(!entry.isIntersecting),
+      { threshold: 0, rootMargin: "-1px 0px 0px 0px" }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md transition-all duration-200",
-        scrolled && "border-b border-border shadow-sm"
-      )}
-    >
-      <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-24 h-16 flex items-center justify-between gap-6">
+    <>
+      {/* Invisible sentinel at top of page for scroll detection */}
+      <div ref={sentinelRef} className="absolute top-0 left-0 w-px h-px pointer-events-none" />
+      <header
+        className={cn(
+          "sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md transition-all duration-200",
+          scrolled && "border-b border-border shadow-sm"
+        )}
+      >
+        <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-24 h-16 flex items-center justify-between gap-6">
         <Link
           href="/"
           className="font-display font-bold text-xl tracking-tight text-foreground hover:text-accent transition-colors shrink-0"
@@ -82,5 +91,6 @@ export default function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }
